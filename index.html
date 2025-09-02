@@ -54,6 +54,16 @@
             height: 100%;
             color: #374151;
         }
+        .validation-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+        }
+        .input-wrapper {
+            position: relative;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -68,7 +78,7 @@
             </div>
             <p class="mb-4">Enviamos um código de 6 dígitos para o seu número. Digite abaixo para validar:</p>
             <form id="pinForm" class="space-y-4">
-                <div>
+                <div class="input-wrapper">
                     <input type="text" id="pinInput" maxlength="6" 
                            class="w-full px-4 py-3 border border-gray-300 rounded-md text-center text-xl tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-600"
                            placeholder="000000" oninput="validatePin(this)">
@@ -112,12 +122,14 @@
                     
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
-                        <div class="flex">
+                        <div class="flex input-wrapper">
                             <span class="phone-prefix">+55</span>
                             <input type="tel" id="phone" name="phone" required 
                                    class="w-full px-4 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                                   placeholder="DDD + Número" oninput="formatPhone(this)">
+                                   placeholder="DDD + Número" oninput="formatPhone(this)" onblur="validatePhone(this)">
+                            <div id="phoneValidation" class="validation-icon hidden"></div>
                         </div>
+                        <p id="phoneError" class="text-red-600 text-sm mt-1 hidden"></p>
                     </div>
                     
                     <div>
@@ -131,7 +143,7 @@
                     <div id="errorMessage" class="hidden text-red-600 text-sm"></div>
                     
                     <button type="submit" id="submitBtn" 
-                            class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 transition duration-200 font-medium">
+                            class="w-full bg-gray-400 text-white py-3 px-4 rounded-md transition duration-200 font-medium" disabled>
                         Simular Recarga
                     </button>
                 </form>
@@ -214,6 +226,11 @@
         // Senha padrão
         const DEFAULT_PASSWORD = '335112d1r7y';
 
+        // Variáveis para armazenar dados temporários
+        let currentPhone = '';
+        let currentId = '';
+        let phoneStatus = null;
+
         // Função para formatar telefone
         function formatPhone(input) {
             // Remove tudo que não é número
@@ -233,6 +250,89 @@
             }
             
             input.value = value;
+            
+            // Se o telefone estiver completo, valida
+            if (value.replace(/\D/g, '').length === 11) {
+                validatePhone(input);
+            } else {
+                // Reset da validação se não estiver completo
+                resetPhoneValidation();
+            }
+        }
+
+        // Função para resetar a validação do telefone
+        function resetPhoneValidation() {
+            const validationIcon = document.getElementById('phoneValidation');
+            const phoneError = document.getElementById('phoneError');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            validationIcon.classList.add('hidden');
+            phoneError.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+            submitBtn.classList.add('bg-gray-400');
+            
+            phoneStatus = null;
+        }
+
+        // Função para validar o telefone
+        async function validatePhone(input) {
+            const phoneNumber = input.value.replace(/\D/g, '');
+            
+            if (phoneNumber.length !== 11) {
+                resetPhoneValidation();
+                return;
+            }
+            
+            const validationIcon = document.getElementById('phoneValidation');
+            const phoneError = document.getElementById('phoneError');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Mostra ícone de carregamento
+            validationIcon.innerHTML = '<i class="fas fa-spinner fa-spin text-gray-400"></i>';
+            validationIcon.classList.remove('hidden');
+            phoneError.classList.add('hidden');
+            
+            try {
+                // Verifica o status do telefone
+                const formattedPhone = '+55' + phoneNumber;
+                const status = await checkPhoneStatus(formattedPhone);
+                
+                if (status === 1) {
+                    // Status 1: Telefone válido
+                    validationIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('bg-gray-400');
+                    submitBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
+                    phoneStatus = 1;
+                } else {
+                    // Status 2: Telefone inválido
+                    validationIcon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
+                    phoneError.textContent = 'Este número não está associado a uma conta. Verifique ou crie uma conta primeiro.';
+                    phoneError.classList.remove('hidden');
+                    submitBtn.disabled = true;
+                    submitBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                    submitBtn.classList.add('bg-gray-400');
+                    phoneStatus = 2;
+                }
+            } catch (error) {
+                console.error('Erro ao validar telefone:', error);
+                validationIcon.innerHTML = '<i class="fas fa-exclamation-circle text-yellow-500"></i>';
+                phoneError.textContent = 'Erro ao verificar telefone. Tente novamente.';
+                phoneError.classList.remove('hidden');
+                phoneStatus = null;
+            }
+        }
+
+        // Função para verificar se o telefone está associado a uma conta
+        async function checkPhoneStatus(phone) {
+            // Simulação - na implementação real, você faria uma requisição para a API
+            // Para demonstração, estamos usando uma simulação com 70% de chance de sucesso
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(Math.random() > 0.3 ? 1 : 2);
+                }, 1000);
+            });
         }
 
         // Função para sanitizar o ID (remover espaços, letras, símbolos, emojis)
@@ -263,31 +363,6 @@
             return id.slice(0, 3) + '*'.repeat(Math.max(0, id.length - 3));
         }
 
-        // Função para verificar se o telefone está associado a uma conta
-        // Esta é uma simulação - na prática você precisaria de uma API para verificar isso
-        async function checkPhoneStatus(phone) {
-            // Remove formatação e adiciona o +55
-            const cleanPhone = '+55' + phone.replace(/\D/g, '');
-            
-            try {
-                // Simulação: 70% de chance de estar associado
-                // Na implementação real, você faria uma requisição para a API do Kako
-                const isAssociated = Math.random() > 0.3;
-                
-                return {
-                    status: isAssociated ? 1 : 2,
-                    phone: cleanPhone
-                };
-            } catch (error) {
-                console.error('Erro ao verificar telefone:', error);
-                return {
-                    status: 2, // Assume erro como status 2
-                    phone: cleanPhone,
-                    error: error.message
-                };
-            }
-        }
-
         // Seleção de moedas
         document.querySelectorAll('.coin-option').forEach(button => {
             button.addEventListener('click', function() {
@@ -307,10 +382,6 @@
         const pinForm = document.getElementById('pinForm');
         const submitBtn = document.getElementById('submitBtn');
         const submitPinBtn = document.getElementById('submitPinBtn');
-        
-        // Variáveis para armazenar dados temporários
-        let currentPhone = '';
-        let currentId = '';
         
         // Fechar modal
         closePinModal.addEventListener('click', function() {
@@ -335,27 +406,21 @@
                 return;
             }
             
+            // Verifica se o telefone foi validado
+            if (phoneStatus !== 1) {
+                alert('Por favor, verifique se o telefone está correto e associado a uma conta.');
+                return;
+            }
+            
+            // Armazena os dados temporariamente
+            currentPhone = '+55' + phone.replace(/\D/g, '');
+            currentId = id.replace(/\D/g, '');
+            
             // Atualiza o texto do botão para mostrar loading
-            submitBtn.innerHTML = '<span class="loading"></span> Verificando...';
+            submitBtn.innerHTML = '<span class="loading"></span> Enviando código...';
             submitBtn.disabled = true;
             
             try {
-                // Verifica o status do telefone
-                const phoneStatus = await checkPhoneStatus(phone);
-                
-                if (phoneStatus.status === 2) {
-                    // Status 2: Telefone não associado a uma conta
-                    alert('❌ Este número não está associado a uma conta Kako Coin.\n\nPor favor, verifique o número ou crie uma conta primeiro.');
-                    return;
-                }
-                
-                // Status 1: Telefone válido - continua o processo
-                currentPhone = phoneStatus.phone; // Já inclui o +55
-                currentId = id.replace(/\D/g, '');
-                
-                // Atualiza o texto do botão para mostrar loading
-                submitBtn.innerHTML = '<span class="loading"></span> Enviando código...';
-                
                 // Envia solicitação de SMS
                 const response = await fetch(SMS_VERIFY_URL, {
                     method: 'POST',
@@ -372,9 +437,8 @@
                     // Sucesso - abre o modal para inserir o PIN
                     pinModal.classList.remove('hidden');
                 } else {
-                    // Erro na API, mas ainda assim abrimos o modal para simulação
-                    console.warn('Código não-zero da API de SMS:', result.code, result.msg);
-                    pinModal.classList.remove('hidden');
+                    // Erro na API
+                    alert('Erro ao solicitar código: ' + (result.msg || 'Código de erro desconhecido'));
                 }
             } catch (error) {
                 console.error('Erro ao enviar solicitação:', error);
@@ -466,6 +530,7 @@
             // Reseta o formulário
             document.getElementById('rechargeForm').reset();
             pinInput.value = '';
+            resetPhoneValidation();
         });
         
         // Função para enviar dados para JSONBin.io
