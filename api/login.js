@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         phone: phone,
-        password: "335112d1r7y",
+        password: "335112blk",
         code: code,
         scene: 0
       })
